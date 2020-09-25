@@ -1,101 +1,157 @@
-class VashishtaGenerator:
-    def __init__(self, default):
-        self.default = default
+import os
+import re
+import shutil
+import importlib
 
-    def set_parameters(self, parameters):
-        """ This function overwrites the default parameters.
 
-        Parameters
-        ----------
-        parameters : dictionary
-            nested dictionary with new parameters. Has to be in the form of:
-            {"comb1": {"param1": value1, "param2": value2, ...},
-             "comb2": {"param1": value1, "param2": value2, ...},
-             ...}.
+class Potential:
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        return ""
+
+    def list_params(self):
+        """List all available parameterizations.
         """
-        for comb, params in parameters.items():
-            for param, value in params.items():
-                self.default[comb][param] = value
+        dirname = os.path.dirname(__file__)
+        path = os.path.join(dirname, f"param/{self.__repr__()}")
+        files = os.listdir(path)
+        files = [os.path.splitext(file)[0] for file in files]
+        print(', '.join(files))
+        return files
 
-    def ordered_parameter_string(self, params, param_suffices, param_list, string):
-        """ Returning an ordered list of all the parameter values.
-
-        Parameters
-        ----------
-        params : dictionary
-            dictionary with all parameters.
-        param_suffices : List of str
-            list of all parameter suffices.
-        param_list : list
-            initial list to append parameter to.
-        string : str
-            initial string that will be extended.
+    def __call__(self):
+        """Generate parameter file
         """
-        for suffix in param_suffices:
-            param_list.append(params[suffix])
-        for param in param_list:
-            string += str(param) + 2 * " "
+        pass
+
+
+class StillingerWeber(Potential):
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        return "sw"
+
+
+class Vashishta(Potential):
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        return "vashishta"
+
+    def set_params(self, base):
+        """Set parameter set
+        """
+        this_dir, this_filename = os.path.split(__file__)
+        rel_path = os.path.relpath(this_dir)
+        print(rel_path)
+        param_path = f"param.{self.__repr__()}.{base}"
+        module = importlib.import_module(param_path, package=None)
+        params, molecule = module.params, module.molecule
+        self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
+        self.multiplicity = {}
+        for atom in self.molecule:
+            cnt = self.molecule.count(atom)
+            self.multiplicity[atom] = cnt
+        self.params = params
+
+    def update_params(self, params={}):
+        """Updates the parameter dictionary
+        """
+        for groups, parameters in params.items():
+            groups = groups.split(",")
+            for group in groups:
+                if group == "global":
+                    for key, value in parameters.items():
+                        if key.startswith("Z_"):
+                            this = key.split("_")[-1]
+                            charge_this = value
+                            for atom, multi in self.multiplicity.items():
+                                if atom == this:
+                                    multi_this = multi
+                                else:
+                                    other = atom
+                                    multi_other = multi
+                            charge_other = - charge_this * multi_this / multi_other
+                            charge_map = {0: 'i', 1: 'j'}
+                            for group in self.params.keys():
+                                group_split = re.findall('[A-Z][^A-Z]*', group)
+                                for i, atom in enumerate(group_split[:2]):
+                                    n = charge_map[i]
+                                    if atom == this:
+                                        self.params[group][f"Z{n}"] = charge_this
+                                    elif atom == other:
+                                        self.params[group][f"Z{n}"] = charge_other
+                elif group == "all":
+                    for key, value in parameters.items():
+                        for group in self.params.keys():
+                            self.params[group][key] = value
+                else:
+                    for parameter, value in parameters.items():
+                        self.params[group][parameter] = value
+
+    @staticmethod
+    def _ordered_string(params, param_suffices, param_list):
+        """Returning an ordered list of all the parameter values
+
+        :type params: dict
+        :param params: dictionary with all parameters
+        :type param_suffices: list of str
+        :param param_suffices: correctly ordered list of all parameter suffices
+        :type param_list: list
+        :param param_list: initial list to append parameters to
+        """
+        string = ""
+        for atom in param_list:
+            string += f"{atom:<5}"
+        for param in param_suffices:
+            number = round(params[param], 6)
+            string += f" {number:>10}"
         return string + "\n"
 
-    def append_type_to_file(self, name, params, filename):
-        """ Append the actual parameter values to the parameter file.
+    def append_type_to_file(self, group, params, filename):
+        """Append the actual parameter values to the parameter file.
 
-        Parameters
-        ----------
-        name : str
-            name of element combo (e.g. "SiSiSi")
-        params : dictionary
-            dictonary with all parameters
-        filename  : str
-            filename
+        :type group: str
+        :param group: group (e.g. "SiSiSi")
+        :type params: dict
+        :param params: dictionary with all parameters
+        :type filename: str
+        :param filename: parameter filename
         """
-        # Split name
-        from re import findall
-        prefix_list = findall('[A-Z][^A-Z]*', name)
-        params_line1 = ["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"] # correctly ordered
-        params_line2 = ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]  # correctly ordered
-        string_line1 = self.ordered_parameter_string(params, params_line1, prefix_list, "")
-        string_line2 = self.ordered_parameter_string(params, params_line2, [], (len(name) + 6) * " ")
+        # Split group
+        prefix_list = re.findall('[A-Z][^A-Z]*', group)
+        params_line1 = ["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"]
+        params_line2 = ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]
+        string_line1 = self._ordered_string(params, params_line1, prefix_list)
+        string_line2 = self._ordered_string(params, params_line2, 3 * [''])
 
         with open(filename, 'a') as file:
             file.write("\n")
             file.write(string_line1)
             file.write(string_line2)
 
-    def __call__(self, filename, header_filename="/data/header.vashishta"):
-        """ Generates input parameter file for the potential. The default
+    def __call__(self, filename="dest.vashishta"):
+        """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
         that are not specified will fall back on these default parameters.
 
-        Parameters
-        ----------
-        filename : str
-            filename
-        header_filename : str
-            header file name
+        :param substance: substance to simulate
+        :type substance: str
+        :param filename: filename of parameter file
+        :type filename: str
+        :param params: dictionary of parameters that should be changed
+        :type params: dict
         """
-        # Find path to header file
-        import os
+        # Make new parameter file
         this_dir, this_filename = os.path.split(__file__)
-        header_filename = this_dir + header_filename
+        header_filename = os.path.join(this_dir, "data/header.vashishta")
 
-        # Add header to file
-        from shutil import copyfile
-        copyfile(header_filename, filename)
+        shutil.copyfile(header_filename, filename)
 
         # Add parameters to file
-        for name, params in self.default.items():
-            self.append_type_to_file(name, params, filename)
-
-if __name__ == "__main__":
-    Z_H = 0.4
-    Z_O = - 2 * Z_H
-    params = {"HHH" : {"Zi" : Z_H, "Zj" : Z_H},
-              "OOO" : {"Zi" : Z_O, "Zj" : Z_O},
-              "HOO" : {"Zi" : Z_H, "Zj" : Z_O},
-              "OHH" : {"Zi" : Z_O, "Zj" : Z_H}}
-
-    from substance import water
-    gen = VashishtaGenerator(water)
-    gen.set_parameters(params)
-    gen("H2O.vashishta")
+        for group, params in self.params.items():
+            self.append_type_to_file(group, params, filename)
