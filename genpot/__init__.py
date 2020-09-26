@@ -37,6 +37,21 @@ class Potential:
         print(', '.join(files))
         return files
 
+    def set_params(self, base):
+        """Set parameter set
+        """
+        # collect information about base set
+        param_path = f"genpot.param.{self.__repr__()}.{base}"
+        pm = importlib.import_module(param_path, package=None)
+        self.params, molecule, self.citation = pm.params, pm.molecule, pm.citation
+        # find multiplicity of atoms in molecule
+        self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
+        self.multiplicity = {}
+        for atom in self.molecule:
+            cnt = self.molecule.count(atom)
+            self.multiplicity[atom] = cnt
+        self.header = self._write_header()
+
     @staticmethod
     def _ordered_string(params, param_suffices, param_list):
         """Returning an ordered list of all the parameter values
@@ -105,59 +120,6 @@ class Potential:
         for group, params in self.params.items():
             self.append_type_to_file(group, params, filename)
 
-
-class StillingerWeber(Potential):
-    def __init__(self):
-        # nested list defining how parameters should be distributed
-        # through multiple lines, ordering should NOT be modified
-        self.suffices = [["epsilon", "sigma", "a", "lambda", "gamma", "cos(theta)"],
-                         ["A", "B", "p", "q", "tol"]]
-
-    def __repr__(self):
-        return "sw"
-
-    def set_params(self, base):
-        """Set parameter set
-        """
-        # collect information about base set
-        param_path = f"genpot.param.{self.__repr__()}.{base}"
-        pm = importlib.import_module(param_path, package=None)
-        self.params, self.citation = pm.params, pm.citation
-        self.header = self._write_header()
-
-    def update_params(self, params={}):
-        """Updates the parameter dictionary
-        """
-        self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED\n#\n"
-        for parameter, value in params.items():
-            self.params["SiSiSi"][parameter] = value
-
-
-class Vashishta(Potential):
-    def __init__(self):
-        # nested list defining how parameters should be distributed
-        # through multiple lines, ordering should NOT be modified
-        self.suffices = [["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"],
-                         ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]]
-
-    def __repr__(self):
-        return "vashishta"
-
-    def set_params(self, base):
-        """Set parameter set
-        """
-        # collect information about base set
-        param_path = f"genpot.param.{self.__repr__()}.{base}"
-        pm = importlib.import_module(param_path, package=None)
-        self.params, molecule, self.citation = pm.params, pm.molecule, pm.citation
-        # find multiplicity of atoms in molecule
-        self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
-        self.multiplicity = {}
-        for atom in self.molecule:
-            cnt = self.molecule.count(atom)
-            self.multiplicity[atom] = cnt
-        self.header = self._write_header()
-
     def update_params(self, params={}):
         """Updates the parameter dictionary
         """
@@ -193,3 +155,25 @@ class Vashishta(Potential):
                 else:
                     for parameter, value in parameters.items():
                         self.params[group][parameter] = value
+
+
+class StillingerWeber(Potential):
+    def __init__(self):
+        # nested list defining how parameters should be distributed
+        # through multiple lines, ordering should NOT be modified
+        self.suffices = [["epsilon", "sigma", "a", "lambda", "gamma", "cos(theta)"],
+                         ["A", "B", "p", "q", "tol"]]
+
+    def __repr__(self):
+        return "sw"
+
+
+class Vashishta(Potential):
+    def __init__(self):
+        # nested list defining how parameters should be distributed
+        # through multiple lines, ordering should NOT be modified
+        self.suffices = [["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"],
+                         ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]]
+
+    def __repr__(self):
+        return "vashishta"
