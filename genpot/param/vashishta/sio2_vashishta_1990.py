@@ -3,6 +3,8 @@
 
 molecule = "OSiO"
 
+citation = "P. Vashishta, R. K. Kalia, J. P. Rino, and I. Ebbsjo, Phys. Rev. B 41, 12197 (1990)"
+
 params = {"SiSiSi":    {"H": 0.39246,
                         "eta": 11,
                         "Zi": 1.2,

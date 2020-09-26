@@ -1,6 +1,8 @@
 # Vashishta potential file for SiC, P. Vashishta, R. K. Kalia, A. Nakano,
 # and J. P. Rino. J. Appl. Phys. 101, 103515 (2007).
 
+citation = "P. Vashishta, R. K. Kalia, A. Nakano, and J. P. Rino. J. Appl. Phys. 101, 103515 (2007)"
+
 molecule = "SiC"
 
 params = {"CCC":       {"H": 471.74538,

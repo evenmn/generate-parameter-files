@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+import datetime
 import importlib
 
 
@@ -11,87 +12,30 @@ class Potential:
     def __repr__(self):
         return ""
 
+    def _write_header(self):
+        today = datetime.datetime.today()
+        package_name = "genpot"
+        url = "http://www.github.com/evenmn/generate-parameter-files"
+        cont="Even M. Nordhagen"
+        email="evenmn@fys.uio.no"
+
+        string = f"# THIS PARAMETER FILE WAS GENERATED USING {package_name} \n#\n"
+        string += f"# URL: {url}\n"
+        string += f"# CONTRIBUTOR: {cont}, {email}\n#\n"
+        string += f"# DATE: {today:%B %d, %Y}\n"
+        string += f"# CITATION: {self.citation}\n#\n"
+        return string
+
     def list_params(self):
         """List all available parameterizations.
         """
         dirname = os.path.dirname(__file__)
         path = os.path.join(dirname, f"param/{self.__repr__()}")
         files = os.listdir(path)
+        files = list(filter(lambda s: not s.startswith('__'), files))
         files = [os.path.splitext(file)[0] for file in files]
         print(', '.join(files))
         return files
-
-    def __call__(self):
-        """Generate parameter file
-        """
-        pass
-
-
-class StillingerWeber(Potential):
-    def __init__(self):
-        pass
-
-    def __repr__(self):
-        return "sw"
-
-
-class Vashishta(Potential):
-    def __init__(self):
-        pass
-
-    def __repr__(self):
-        return "vashishta"
-
-    def set_params(self, base):
-        """Set parameter set
-        """
-        this_dir, this_filename = os.path.split(__file__)
-        rel_path = os.path.relpath(this_dir)
-        print(rel_path)
-        param_path = f"param.{self.__repr__()}.{base}"
-        module = importlib.import_module(param_path, package=None)
-        params, molecule = module.params, module.molecule
-        self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
-        self.multiplicity = {}
-        for atom in self.molecule:
-            cnt = self.molecule.count(atom)
-            self.multiplicity[atom] = cnt
-        self.params = params
-
-    def update_params(self, params={}):
-        """Updates the parameter dictionary
-        """
-        for groups, parameters in params.items():
-            groups = groups.split(",")
-            for group in groups:
-                if group == "global":
-                    for key, value in parameters.items():
-                        if key.startswith("Z_"):
-                            this = key.split("_")[-1]
-                            charge_this = value
-                            for atom, multi in self.multiplicity.items():
-                                if atom == this:
-                                    multi_this = multi
-                                else:
-                                    other = atom
-                                    multi_other = multi
-                            charge_other = - charge_this * multi_this / multi_other
-                            charge_map = {0: 'i', 1: 'j'}
-                            for group in self.params.keys():
-                                group_split = re.findall('[A-Z][^A-Z]*', group)
-                                for i, atom in enumerate(group_split[:2]):
-                                    n = charge_map[i]
-                                    if atom == this:
-                                        self.params[group][f"Z{n}"] = charge_this
-                                    elif atom == other:
-                                        self.params[group][f"Z{n}"] = charge_other
-                elif group == "all":
-                    for key, value in parameters.items():
-                        for group in self.params.keys():
-                            self.params[group][key] = value
-                else:
-                    for parameter, value in parameters.items():
-                        self.params[group][parameter] = value
 
     @staticmethod
     def _ordered_string(params, param_suffices, param_list):
@@ -124,15 +68,14 @@ class Vashishta(Potential):
         """
         # Split group
         prefix_list = re.findall('[A-Z][^A-Z]*', group)
-        params_line1 = ["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"]
-        params_line2 = ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]
-        string_line1 = self._ordered_string(params, params_line1, prefix_list)
-        string_line2 = self._ordered_string(params, params_line2, 3 * [''])
-
-        with open(filename, 'a') as file:
-            file.write("\n")
-            file.write(string_line1)
-            file.write(string_line2)
+        with open(filename, 'a') as f:
+            f.write("\n")
+            for i, suffix_list in enumerate(self.suffices):
+                if i == 0:
+                    string = self._ordered_string(params, suffix_list, prefix_list)
+                else:
+                    string = self._ordered_string(params, suffix_list, 3 * [''])
+                f.write(string)
 
     def __call__(self, filename="dest.vashishta"):
         """Generates input parameter file for the potential. The default
@@ -148,10 +91,105 @@ class Vashishta(Potential):
         """
         # Make new parameter file
         this_dir, this_filename = os.path.split(__file__)
-        header_filename = os.path.join(this_dir, "data/header.vashishta")
+        header_filename = os.path.join(this_dir, f"data/header.{self.__repr__()}")
 
         shutil.copyfile(header_filename, filename)
+        with open(filename, 'r+') as f:
+            content = f.read()
+            f.seek(0, 0)
+            f.write(self.header.rstrip('\r\n') + '\n' + content)
+            for suffix_list in self.suffices:
+                f.write("#" + 11 * " " + ", ".join(suffix_list) + "\n")
 
         # Add parameters to file
         for group, params in self.params.items():
             self.append_type_to_file(group, params, filename)
+
+
+class StillingerWeber(Potential):
+    def __init__(self):
+        # nested list defining how parameters should be distributed
+        # through multiple lines, ordering should NOT be modified
+        self.suffices = [["epsilon", "sigma", "a", "lambda", "gamma", "cos(theta)"],
+                         ["A", "B", "p", "q", "tol"]]
+
+    def __repr__(self):
+        return "sw"
+
+    def set_params(self, base):
+        """Set parameter set
+        """
+        # collect information about base set
+        param_path = f"genpot.param.{self.__repr__()}.{base}"
+        pm = importlib.import_module(param_path, package=None)
+        self.params, self.citation = pm.params, pm.citation
+        self.header = self._write_header()
+
+    def update_params(self, params={}):
+        """Updates the parameter dictionary
+        """
+        self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED\n#\n"
+        for parameter, value in params.items():
+            self.params["SiSiSi"][parameter] = value
+
+
+class Vashishta(Potential):
+    def __init__(self):
+        # nested list defining how parameters should be distributed
+        # through multiple lines, ordering should NOT be modified
+        self.suffices = [["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"],
+                         ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]]
+
+    def __repr__(self):
+        return "vashishta"
+
+    def set_params(self, base):
+        """Set parameter set
+        """
+        # collect information about base set
+        param_path = f"genpot.param.{self.__repr__()}.{base}"
+        pm = importlib.import_module(param_path, package=None)
+        self.params, molecule, self.citation = pm.params, pm.molecule, pm.citation
+        # find multiplicity of atoms in molecule
+        self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
+        self.multiplicity = {}
+        for atom in self.molecule:
+            cnt = self.molecule.count(atom)
+            self.multiplicity[atom] = cnt
+        self.header = self._write_header()
+
+    def update_params(self, params={}):
+        """Updates the parameter dictionary
+        """
+        self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED\n#\n"
+        for groups, parameters in params.items():
+            groups = groups.split(",")
+            for group in groups:
+                if group == "global":
+                    for key, value in parameters.items():
+                        if key.startswith("Z_"):
+                            this = key.split("_")[-1]
+                            charge_this = value
+                            for atom, multi in self.multiplicity.items():
+                                if atom == this:
+                                    multi_this = multi
+                                else:
+                                    other = atom
+                                    multi_other = multi
+                            charge_other = - charge_this * multi_this / multi_other
+                            charge_map = {0: 'i', 1: 'j'}
+                            for group in self.params.keys():
+                                group_split = re.findall('[A-Z][^A-Z]*', group)
+                                for i, atom in enumerate(group_split[:2]):
+                                    n = charge_map[i]
+                                    if atom == this:
+                                        self.params[group][f"Z{n}"] = charge_this
+                                    elif atom == other:
+                                        self.params[group][f"Z{n}"] = charge_other
+                elif group == "all":
+                    for key, value in parameters.items():
+                        for group in self.params.keys():
+                            self.params[group][key] = value
+                else:
+                    for parameter, value in parameters.items():
+                        self.params[group][parameter] = value

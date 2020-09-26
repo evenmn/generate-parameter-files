@@ -1,6 +1,8 @@
 # Vashishta potential file for InP, Branicio, Rino, Gan and Tsuzuki,
 # J. Phys Condensed Matter 21 (2009) 095002
 
+citation = "Branicio, Rino, Gan and Tsuzuki, J. Phys Condensed Matter 21 (2009) 095002"
+
 molecule = "InP"
 
 params = {"InInIn":    {"H": 273.584,

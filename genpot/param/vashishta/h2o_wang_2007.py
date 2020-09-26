@@ -1,5 +1,7 @@
 # No reference
 
+citation = "No reference"
+
 molecule = "HOH"
 
 params = {"HHH":       {"H": 0.0,

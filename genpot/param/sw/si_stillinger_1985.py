@@ -1,5 +1,9 @@
 # Stillinger and Weber,  Phys. Rev. B, v. 31, p. 5262, (1985)
 
+citation = "Phys. Rev. B, v. 31, p. 5262, (1985)"
+
+molecule = "Si"
+
 params = {"SiSiSi":    {"epsilon": 2.1683,
                         "sigma": 2.0951,
                         "a": 1.80,
