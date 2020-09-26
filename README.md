@@ -56,7 +56,7 @@ For a substance of pure silicon, as in the example above, we will only have one 
 ``` python
 potential.update_params({'OOO': {'Zi': -0.6, 'Zj': -0.6, 'r4s': 5.0},
                          'HHH': {'Zi': 0.3, 'Zj': 0.3, 'r4s': 5.0},
-                         'OHH': {'Zi': -0.6, 'Zj': 0.3, 'r4s': 5.0, 'H': 1000.0}
+                         'OHH': {'Zi': -0.6, 'Zj': 0.3, 'r4s': 5.0, 'H': 1000.0},
                          'HOO': {'H': 1000.0}})
 ```
 However, often the parameters are coupled. Here, the effective charge of H and O should be the same in all interaction groups, which makes it excessive to update all of them manually. Instead, the effective charges can be updated globally, using:
