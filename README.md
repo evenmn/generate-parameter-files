@@ -55,14 +55,19 @@ h2o_wang_2007, lnp_branicio_2009, sic_vashishta_2007, sio2_vashishta_1990
 For a substance of pure silicon, as in the example above, we will only have one interaction group (interactions between the silicon atoms). For more complex substances, like water, there are multiple interaction groups that we need to assign values to. All the values can be set manually as shown above:
 ``` python
 potential.update_params({'OOO': {'Zi': -0.6, 'Zj': -0.6, 'r4s': 5.0},
-                         'HHH': {'Zi': 0.3, 'Zj': 0.3, 'r4s': 5.0,
-                         'OHH': {'Zi': -0.6, 'Zj': 0.3, 'r4s': 5.0}}})
+                         'HHH': {'Zi': 0.3, 'Zj': 0.3, 'r4s': 5.0},
+                         'OHH': {'Zi': -0.6, 'Zj': 0.3, 'r4s': 5.0, 'H': 1000.0}
+                         'HOO': {'H': 1000.0}})
 ```
 However, often the parameters are coupled. Here, the effective charge of H and O should be the same in all interaction groups, which makes it excessive to update all of them manually. Instead, the effective charges can be updated globally, using:
 ``` python
 potential.update_params({'global': {'Z_H': 0.3}})
 ```
-Also, we often want a parameter to be the same across all groups. Especially for cutoff distances, this is convenient. Similar to the ```global``` group, there is a ```all``` group that simplifies this operation:
+Also, we often want a parameter to be the same across of all groups. Especially for cutoff distances, this is convenient. Similar to the ```global``` group, there is a ```all``` group that simplifies this operation:
 ``` python
 potential.update_params({'all': {'r4s': 5.0}})
+```
+Sometimes, we want to change a parameter of several groups, but not all. This can be done by specifying the different groups separated by a comma:
+``` python
+potential.update_params({'OHH,HOO': {'H': 1000.0}})
 ```
