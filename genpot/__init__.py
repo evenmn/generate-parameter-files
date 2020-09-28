@@ -6,18 +6,18 @@ import importlib
 
 
 class Potential:
-    def __init__(self):
-        pass
+    def __init__(self, base=None):
+        self.base = base
 
     def __repr__(self):
         return ""
 
     def _write_header(self):
-        today = datetime.datetime.today()
         package_name = "genpot"
         url = "http://www.github.com/evenmn/generate-parameter-files"
-        cont="Even M. Nordhagen"
-        email="evenmn@fys.uio.no"
+        cont = "Even M. Nordhagen"
+        email = "evenmn@fys.uio.no"
+        today = datetime.datetime.today()
 
         string = f"# THIS PARAMETER FILE WAS GENERATED USING {package_name} \n#\n"
         string += f"# URL: {url}\n"
@@ -40,8 +40,14 @@ class Potential:
     def set_params(self, base):
         """Set parameter set
         """
-        # collect information about base set
-        param_path = f"genpot.param.{self.__repr__()}.{base}"
+        self.base = base
+
+    def _collect_params(self):
+        """collect information about base set
+        """
+        if self.base is None:
+            raise TypeError("Base parameterization is not given!!")
+        param_path = f"genpot.param.{self.__repr__()}.{self.base}"
         pm = importlib.import_module(param_path, package=None)
         self.params, molecule, self.citation = pm.params, pm.molecule, pm.citation
         # find multiplicity of atoms in molecule
@@ -92,37 +98,10 @@ class Potential:
                     string = self._ordered_string(params, suffix_list, 3 * [''])
                 f.write(string)
 
-    def __call__(self, filename="dest.vashishta"):
-        """Generates input parameter file for the potential. The default
-        parameters are the ones specified in Wang et al., so parameters
-        that are not specified will fall back on these default parameters.
-
-        :param substance: substance to simulate
-        :type substance: str
-        :param filename: filename of parameter file
-        :type filename: str
-        :param params: dictionary of parameters that should be changed
-        :type params: dict
-        """
-        # Make new parameter file
-        this_dir, this_filename = os.path.split(__file__)
-        header_filename = os.path.join(this_dir, f"data/header.{self.__repr__()}")
-
-        shutil.copyfile(header_filename, filename)
-        with open(filename, 'r+') as f:
-            content = f.read()
-            f.seek(0, 0)
-            f.write(self.header.rstrip('\r\n') + '\n' + content)
-            for suffix_list in self.suffices:
-                f.write("#" + 11 * " " + ", ".join(suffix_list) + "\n")
-
-        # Add parameters to file
-        for group, params in self.params.items():
-            self.append_type_to_file(group, params, filename)
-
     def update_params(self, params={}):
         """Updates the parameter dictionary
         """
+        self._collect_params()
         self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED\n#\n"
         for groups, parameters in params.items():
             groups = groups.split(",")
@@ -156,24 +135,55 @@ class Potential:
                     for parameter, value in parameters.items():
                         self.params[group][parameter] = value
 
+    def __call__(self, filename="dest.vashishta"):
+        """Generates input parameter file for the potential. The default
+        parameters are the ones specified in Wang et al., so parameters
+        that are not specified will fall back on these default parameters.
+
+        :param substance: substance to simulate
+        :type substance: str
+        :param filename: filename of parameter file
+        :type filename: str
+        :param params: dictionary of parameters that should be changed
+        :type params: dict
+        """
+        # Make new parameter file
+        this_dir, this_filename = os.path.split(__file__)
+        header_filename = os.path.join(this_dir, f"data/header.{self.__repr__()}")
+
+        shutil.copyfile(header_filename, filename)
+        with open(filename, 'r+') as f:
+            content = f.read()
+            f.seek(0, 0)
+            f.write(self.header.rstrip('\r\n') + '\n' + content)
+            for suffix_list in self.suffices:
+                f.write("#" + 11 * " " + ", ".join(suffix_list) + "\n")
+
+        # Add parameters to file
+        for group, params in self.params.items():
+            self.append_type_to_file(group, params, filename)
+        print(f"New parameter file '{filename}' successfully generated!")
+
 
 class StillingerWeber(Potential):
-    def __init__(self):
+    def __init__(self, base=None):
         # nested list defining how parameters should be distributed
         # through multiple lines, ordering should NOT be modified
         self.suffices = [["epsilon", "sigma", "a", "lambda", "gamma", "cos(theta)"],
                          ["A", "B", "p", "q", "tol"]]
+        self.base = base
 
     def __repr__(self):
         return "sw"
 
 
 class Vashishta(Potential):
-    def __init__(self):
+    def __init__(self, base=None):
         # nested list defining how parameters should be distributed
         # through multiple lines, ordering should NOT be modified
         self.suffices = [["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"],
                          ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]]
+        self.base = base
 
     def __repr__(self):
         return "vashishta"

@@ -16,11 +16,10 @@ $ pip install .
 The short script
 ``` python
 from genpot import StillingerWeber
-potential = StillingerWeber()
-potential.set_params('si_stillinger_1985')
+potential = StillingerWeber('si_stillinger_1985')
 potential("Si.sw")
 ```
-will generate the original parameterization by Stillinger and Weber from 1985:
+will generate the original parameterization for silicon by Stillinger and Weber from 1985:
 ``` bash
 $ cat Si.sw
 
@@ -49,6 +48,10 @@ potential.list_params()
 ```
 ``` bash
 h2o_wang_2007, lnp_branicio_2009, sic_vashishta_2007, sio2_vashishta_1990
+```
+Thereafter, the preferred parameterization can be set using ```potential.set_params()```:
+``` python
+potential.set_params("h2o_wang_2007")
 ```
 
 ### Coupled parameters
