@@ -3,6 +3,7 @@ import re
 import shutil
 import datetime
 import importlib
+import math
 
 
 class Potential:
@@ -137,6 +138,16 @@ class Potential:
                     for parameter, value in parameters.items():
                         self.params[group][parameter] = value
 
+    def scale(self, scalefactor):
+        """ Apply a multiplicative factor to the interaction potential: U -> U' = scalefactor * U by modifying
+        the parameteters in the potential. Useful for i.e thermodynamic integration. 
+        NOTE: Must be implemented differently for differet types of potentials.
+
+        :param scalefactor: Factor to scale the potential by
+        :type scalefactor: float
+        """
+        return NotImplementedError
+
     def __call__(self, filename="dest.vashishta"):
         """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
@@ -190,6 +201,15 @@ class Vashishta(Potential):
         self.base = base
         if base is not None:
             self._collect_params()
+
+    def scale(self, scalefactor):
+        self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED. POTENTIAL SCALED BY %.2f\n#\n" % scalefactor
+        for pair in self.params:
+            for var in ["H", "D", "W", "B"]:
+                self.params[pair][var] *= scalefactor
+            for var in ["Zi", "Zj"]:
+                self.params[pair][var] *= math.sqrt(scalefactor)
+        return
 
     def __repr__(self):
         return "vashishta"
