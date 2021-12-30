@@ -4,6 +4,7 @@ import shutil
 import datetime
 import importlib
 import math
+import copy
 
 
 class Potential:
@@ -53,7 +54,7 @@ class Potential:
             raise TypeError("Base parameterization is not given!!")
         param_path = f"genpot.param.{self.__repr__()}.{self.base}"
         pm = importlib.import_module(param_path, package=None)
-        self.params, molecule, self.citation = pm.params, pm.molecule, pm.citation
+        self.params, molecule, self.citation = copy.deepcopy(pm.params), pm.molecule, pm.citation
         # find multiplicity of atoms in molecule
         self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
         self.multiplicity = {}
