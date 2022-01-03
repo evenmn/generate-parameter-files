@@ -55,7 +55,7 @@ potential.set_params("h2o_wang_2007")
 ```
 
 ### Coupled parameters
-For a substance of pure silicon, as in the example above, we will only have one interaction group (interactions between the silicon atoms). For more complex substances, like water, there are multiple interaction groups that we need to assign values to. All the values can be set manually as shown above:
+For a substance of pure silicon, as in the example above, we will only have one interaction group (interactions between the silicon atoms). For more complex substances, like water, there are multiple interaction groups that we need to assign values to. All the values can be set manually as shown below:
 ``` python
 potential.update_params({'OOO': {'Zi': -0.6, 'Zj': -0.6, 'r4s': 5.0},
                          'HHH': {'Zi': 0.3, 'Zj': 0.3, 'r4s': 5.0},
@@ -66,7 +66,7 @@ However, often the parameters are coupled. Here, the effective charge of H and O
 ``` python
 potential.update_params({'global': {'Z_H': 0.3}})
 ```
-Also, we often want a parameter to be the same across of all groups. Especially for cutoff distances, this is convenient. Similar to the ```global``` group, there is a ```all``` group that simplifies this operation:
+Also, we often want a parameter to be the same across all the groups. Especially for cutoff distances, this is convenient. Similar to the ```global``` group, there is a ```all``` group that simplifies this operation:
 ``` python
 potential.update_params({'all': {'r4s': 5.0}})
 ```
