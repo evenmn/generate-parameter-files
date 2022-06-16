@@ -1,4 +1,3 @@
-from sklearn.preprocessing import scale
 # Example of how the scale method may be used to generate parameters that may be used for i.e Thermodynamic Integration
 from genpot import Vashishta
 scalefactors = [1.0, 0.75, 0.50, 0.25, 0.0]
