@@ -1,5 +1,5 @@
-# Vashishta potential file for SiO2, 
-# Broughton, Meli,Vashishta,and Kalia, Phys Rev B, v. 56, p. 611 (1997)
+# Vashishta potential file for SiO2, P. Vashishta, R. K. Kalia, J. P. Rino, and
+# I. Ebbsjo, Phys. Rev. B 41, 12197 (1990).
 
 molecule = "OSiO"
 
