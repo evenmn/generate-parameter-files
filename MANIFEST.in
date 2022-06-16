@@ -5,3 +5,4 @@ include genpot/data/header.sw
 # include parameter files
 include genpot/param/vashishta/*.py
 include genpot/param/sw/*.py
+include genpot/param/tip4p/*.py
