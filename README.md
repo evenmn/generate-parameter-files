@@ -1,15 +1,10 @@
-# Generate potential files used in LAMMPS
-genpot is a light-weight Python package for generating parameter files to be used in LAMMPS. Per 2020-09-26, the package supports the Stillinger-Weber force-field and the Vashishta force-field, with multiple base parameterizations. However, the framework is written in a general way that makes it easy to add other force-fields. The strength of the package is that the user can modify the parameter sets as they like. This is in particular useful when parameterizing a force-field.
+# Generate parameter files used in LAMMPS
+genpot is a light-weight Python package for generating parameter files to be used in LAMMPS. Per 2022-06-16, the package supports the Stillinger-Weber, Vashishta and TIP4P force-fields, with multiple base parameterizations. However, the framework is written in a general way that makes it easy to add other force-fields. The strength of the package is that the user can modify the parameters as they like. This is in particular useful when parameterizing a force-field.
 
 ## Installation
-First download the contents:
+Install from source using
 ``` bash
-$ git clone https://github.com/evenmn/generate-potential-files
-```
-and then install genpot:
-``` bash
-$ cd genpot
-$ pip install .
+$ pip install git+https://github.com/evenmn/generate-potential-files
 ```
 
 ## Basic Usage
