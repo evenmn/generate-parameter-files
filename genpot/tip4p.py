@@ -30,6 +30,32 @@ class TIP4P(ForceField):
                 charge_other = - charge_this * multi_this / multi_other
                 self.params[f"Z_{other}"] = charge_other
 
+    def write(self, filename="params.in"):
+        # Collect base parameters if not already done
+        if 'params' not in globals():
+            self._collect_params()
+        with open(filename, 'w') as f:
+            f.write(f"mass 1 {self.mass_H}\n")
+            f.write(f"mass 2 {self.mass_O}\n\n")
+
+            f.write(f"set type 1 charge {self.params['Z_H']}\n")
+            f.write(f"set type 2 charge {self.params['Z_O']}\n\n")
+
+            f.write(f"pair_style lj/cut/tip4p/long 2 1 1 1 {self.params['OM']} {self.params['r4s']}\n")
+            f.write("pair_modify tail yes\n")
+            f.write("kspace_style pppm/tip4p 1.0e-5\n\n")
+
+            f.write("pair_coeff 1 1 0.0 0.0\n")
+            f.write("pair_coeff 1 2 0.0 0.0\n")
+            f.write(f"pair_coeff 2 2 {self.params['epsilon']} {self.params['sigma']}\n\n")
+
+            f.write("bond_style harmonic\n")
+            f.write(f"bond_coeff 1 0.0 {self.params['r0']}\n\n")
+
+            f.write("angle_style harmonic\n")
+            f.write(f"angle_coeff 1 0.0 {self.params['theta']}\n")
+        print(f"New parameter file '{filename}' successfully generated!")
+
     def __call__(self, filename="params.in"):
         # Collect base parameters if not already done
         if 'params' not in globals():

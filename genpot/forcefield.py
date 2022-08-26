@@ -149,6 +149,35 @@ class ForceField:
         """
         return NotImplementedError
 
+    def write(self, filename="dest.vashishta"):
+        """Generates input parameter file for the potential. The default
+        parameters are the ones specified in Wang et al., so parameters
+        that are not specified will fall back on these default parameters.
+
+        :param substance: substance to simulate
+        :type substance: str
+        :param filename: filename of parameter file
+        :type filename: str
+        :param params: dictionary of parameters that should be changed
+        :type params: dict
+        """
+        # Make new parameter file
+        this_dir, this_filename = os.path.split(__file__)
+        header_filename = os.path.join(this_dir, f"data/header.{self.__repr__()}")
+
+        shutil.copyfile(header_filename, filename)
+        with open(filename, 'r+') as f:
+            content = f.read()
+            f.seek(0, 0)
+            f.write(self.header.rstrip('\r\n') + '\n' + content)
+            for suffix_list in self.suffices:
+                f.write("#" + 11 * " " + ", ".join(suffix_list) + "\n")
+
+        # Add parameters to file
+        for group, params in self.params.items():
+            self.append_type_to_file(group, params, filename)
+        print(f"New parameter file '{filename}' successfully generated!")
+
     def __call__(self, filename="dest.vashishta"):
         """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
