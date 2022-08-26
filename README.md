@@ -2,7 +2,12 @@
 genpot is a light-weight Python package for generating parameter files to be used in LAMMPS. Per 2022-06-16, the package supports the Stillinger-Weber, Vashishta and TIP4P force-fields, with multiple base parameterizations. However, the framework is written in a general way that makes it easy to add other force-fields. The strength of the package is that the user can modify the parameters as they like. This is in particular useful when parameterizing a force-field.
 
 ## Installation
-Install from source using
+Install from PyPi using
+
+``` bash
+$ pip install genpot
+```
+or from GitHub (might be unstable) using
 ``` bash
 $ pip install git+https://github.com/evenmn/generate-potential-files
 ```
@@ -12,7 +17,7 @@ The short script
 ``` python
 from genpot import StillingerWeber
 potential = StillingerWeber('si_stillinger_1985')
-potential("Si.sw")
+potential.write("Si.sw")
 ```
 will generate the original parameterization for silicon by Stillinger and Weber from 1985:
 ``` bash

@@ -5,7 +5,7 @@ The Python library is available on PyPi, and can be installed by:
 
 .. code-block:: bash
 
-   pip install generate-parameter-files
+   pip install genpot
 
 The code can also be installed from source by cloning the GitHub repo:
 
