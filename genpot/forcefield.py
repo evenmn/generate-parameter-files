@@ -3,7 +3,6 @@ import re
 import shutil
 import datetime
 import importlib
-import math
 import copy
 
 
@@ -149,7 +148,7 @@ class ForceField:
         """
         return NotImplementedError
 
-    def __call__(self, filename="dest.vashishta"):
+    def write(self, filename="dest.vashishta"):
         """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
         that are not specified will fall back on these default parameters.
@@ -177,3 +176,17 @@ class ForceField:
         for group, params in self.params.items():
             self.append_type_to_file(group, params, filename)
         print(f"New parameter file '{filename}' successfully generated!")
+
+    def __call__(self, filename="dest.vashishta"):
+        """Generates input parameter file for the potential. The default
+        parameters are the ones specified in Wang et al., so parameters
+        that are not specified will fall back on these default parameters.
+
+        :param substance: substance to simulate
+        :type substance: str
+        :param filename: filename of parameter file
+        :type filename: str
+        :param params: dictionary of parameters that should be changed
+        :type params: dict
+        """
+        self.write(filename)

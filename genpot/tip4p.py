@@ -30,7 +30,7 @@ class TIP4P(ForceField):
                 charge_other = - charge_this * multi_this / multi_other
                 self.params[f"Z_{other}"] = charge_other
 
-    def __call__(self, filename="params.in"):
+    def write(self, filename="params.in"):
         # Collect base parameters if not already done
         if 'params' not in globals():
             self._collect_params()
