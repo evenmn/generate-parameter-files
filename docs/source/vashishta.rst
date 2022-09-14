@@ -55,3 +55,4 @@ Scaling the entire potential can be useful in a few situations, including when p
 .. code-block:: python
 
    potential.scale(scalefactor=0.5)
+

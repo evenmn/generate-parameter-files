@@ -37,3 +37,26 @@ Finally, the parameters are written to file using the :code:`write`-method:
 .. code-block:: python
 
    potential.write("Si.sw")
+
+Reduce information
+^^^^^^^^^^^^^^^^^^
+
+The default behavior is to output a message to the terminal when a parameter set was successfully written to file. Avoid this by setting :code:`success_msg=False`:
+
+.. code-block:: python
+
+   potential.write("Si.sw", success_msg=False)
+
+
+When the parameter file is modified, a line is added to the file header:
+
+.. code-block:: bash
+
+   # NB: THE PARAMETERS HAVE BEEN MODIFIED
+
+Avoid this by setting :code:`mod_msg=False`:
+
+.. code-block:: python
+
+   potential.update_params({'SiSiSi': {'p': 0.4}}, mod_msg=False)
+
