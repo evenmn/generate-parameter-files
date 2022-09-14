@@ -11,8 +11,9 @@ class Vashishta(ForceField):
         if base is not None:
             self._collect_params()
 
-    def scale(self, scalefactor):
-        self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED. POTENTIAL SCALED BY %.2f\n#\n" % scalefactor
+    def scale(self, scalefactor, mod_msg=True):
+        if mod_msg:
+            self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED. POTENTIAL SCALED BY %.2f\n#\n" % scalefactor
         for pair in self.params:
             for var in ["H", "D", "W", "B"]:
                 self.params[pair][var] *= scalefactor
