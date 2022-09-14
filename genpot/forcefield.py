@@ -102,10 +102,11 @@ class ForceField:
                     string = self._ordered_string(params, suffix_list, 3 * [''])
                 f.write(string)
 
-    def update_params(self, params={}):
+    def update_params(self, params={}, mod_msg=True):
         """Updates the parameter dictionary
         """
-        self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED\n#\n"
+        if mod_msg:
+            self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED\n#\n"
         for groups, parameters in params.items():
             groups = groups.split(",")
             for group in groups:
@@ -148,7 +149,7 @@ class ForceField:
         """
         return NotImplementedError
 
-    def write(self, filename="dest.vashishta"):
+    def write(self, filename="dest.vashishta", success_msg=True):
         """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
         that are not specified will fall back on these default parameters.
@@ -175,9 +176,10 @@ class ForceField:
         # Add parameters to file
         for group, params in self.params.items():
             self.append_type_to_file(group, params, filename)
-        print(f"New parameter file '{filename}' successfully generated!")
+        if success_msg:
+            print(f"New parameter file '{filename}' successfully generated!")
 
-    def __call__(self, filename="dest.vashishta"):
+    def __call__(self, filename="dest.vashishta", success_msg=True):
         """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
         that are not specified will fall back on these default parameters.
@@ -189,4 +191,4 @@ class ForceField:
         :param params: dictionary of parameters that should be changed
         :type params: dict
         """
-        self.write(filename)
+        self.write(filename, success_msg=success_msg)

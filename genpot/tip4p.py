@@ -30,7 +30,7 @@ class TIP4P(ForceField):
                 charge_other = - charge_this * multi_this / multi_other
                 self.params[f"Z_{other}"] = charge_other
 
-    def write(self, filename="params.in"):
+    def write(self, filename="params.in", success_msg=True):
         # Collect base parameters if not already done
         if 'params' not in globals():
             self._collect_params()
@@ -54,4 +54,5 @@ class TIP4P(ForceField):
 
             f.write("angle_style harmonic\n")
             f.write(f"angle_coeff 1 0.0 {self.params['theta']}\n")
-        print(f"New parameter file '{filename}' successfully generated!")
+        if success_msg:
+            print(f"New parameter file '{filename}' successfully generated!")
