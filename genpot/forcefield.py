@@ -11,6 +11,7 @@ class ForceField:
         self.base = base
         if base is not None:
             self._collect_params()
+        self.modified = False
 
     def __repr__(self):
         return ""
@@ -105,8 +106,9 @@ class ForceField:
     def update_params(self, params={}, mod_msg=True):
         """Updates the parameter dictionary
         """
-        if mod_msg:
+        if mod_msg and not self.modified:
             self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED\n#\n"
+            self.modified = True
         for groups, parameters in params.items():
             groups = groups.split(",")
             for group in groups:

@@ -3,6 +3,7 @@ from .forcefield import ForceField
 
 class Vashishta(ForceField):
     def __init__(self, base=None):
+        super().__init__()
         # nested list defining how parameters should be distributed
         # through multiple lines, ordering should NOT be modified
         self.suffices = [["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"],
@@ -12,8 +13,9 @@ class Vashishta(ForceField):
             self._collect_params()
 
     def scale(self, scalefactor, mod_msg=True):
-        if mod_msg:
+        if mod_msg and not self.modified:
             self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED. POTENTIAL SCALED BY %.2f\n#\n" % scalefactor
+            self.modified = True
         for pair in self.params:
             for var in ["H", "D", "W", "B"]:
                 self.params[pair][var] *= scalefactor
