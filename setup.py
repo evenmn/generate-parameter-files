@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="genpot",
-    version="1.0.0",
+    version="1.1.2",
     author="Even Marius Nordhagen",
     author_email="evenmn@fys.uio.no",
     description="Generate potential files used by LAMMPS",
