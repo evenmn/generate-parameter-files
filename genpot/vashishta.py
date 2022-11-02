@@ -2,15 +2,15 @@ import math
 from .forcefield import ForceField
 
 class Vashishta(ForceField):
-    def __init__(self, base=None):
-        super().__init__()
+    def __init__(self, base=None, **kwargs):
+        super().__init__(base=base, **kwargs)
         # nested list defining how parameters should be distributed
         # through multiple lines, ordering should NOT be modified
         self.suffices = [["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"],
                          ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]]
-        self.base = base
-        if base is not None:
-            self._collect_params()
+        #self.base = base
+        #if base is not None:
+        #    self._collect_params()
 
     def scale(self, scalefactor, mod_msg=True):
         if mod_msg and not self.modified:
