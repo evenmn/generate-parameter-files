@@ -1,14 +1,15 @@
 from .forcefield import ForceField
 
 class TIP4P(ForceField):
-    def __init__(self, base=None):
+    def __init__(self, base=None, **kwargs):
+        super().__init__(base=base, **kwargs)
         self.sufficies = ["Z_H", "Z_O", "r0", "theta", "OM", "epsilon",
                           "sigma", "r4s"]
         self.mass_H = 1.00794
         self.mass_O = 15.9994
-        self.base = base
-        if base is not None:
-            self._collect_params()
+        #self.base = base
+        #if base is not None:
+        #    self._collect_params()
 
     def __repr__(self):
         return "tip4p"

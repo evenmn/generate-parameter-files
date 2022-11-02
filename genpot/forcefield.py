@@ -4,19 +4,34 @@ import shutil
 import datetime
 import importlib
 import copy
+import warnings
 
 
 class ForceField:
-    def __init__(self, base=None):
+    def __init__(self, base=None, params=None, molecule=None, citation=None):
         self.base = base
+        if params is not None:
+            if base is not None:
+                warnings.warn("Both base parameterization and parameters \
+                              provided, ignoring base parameterization")
+            if molecule is None:
+                raise ValueError("Molecule has to be provided to keep \
+                                  neutral (coupled charges)")
+            self.params = params
+            self.citation = citation
+            self._get_multiplicity(molecule)
+            self.header = self._write_header(self.citation)
         if base is not None:
-            self._collect_params()
+            self.params, molecule, self.citation = self._collect_params()
+            self._get_multiplicity(molecule)
+            self.header = self._write_header(self.citation)
         self.modified = False
 
     def __repr__(self):
         return ""
 
-    def _write_header(self):
+    @staticmethod
+    def _write_header(citation):
         package_name = "genpot"
         url = "http://www.github.com/evenmn/generate-parameter-files"
         cont = "Even M. Nordhagen"
@@ -27,7 +42,7 @@ class ForceField:
         string += f"# URL: {url}\n"
         string += f"# CONTRIBUTOR: {cont}, {email}\n#\n"
         string += f"# DATE: {today:%B %d, %Y}\n"
-        string += f"# CITATION: {self.citation}\n#\n"
+        string += f"# CITATION: {citation}\n#\n"
         return string
 
     def list_params(self):
@@ -45,7 +60,18 @@ class ForceField:
         """Set parameter set
         """
         self.base = base
-        self._collect_params()
+        self.params, molecule, self.citation = self._collect_params()
+        self._get_multiplicity(molecule)
+        self.header = self._write_header(self.citation)
+
+    def _get_multiplicity(self, molecule):
+        """Find multiplicity of atoms in molecule
+        """
+        self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
+        self.multiplicity = {}
+        for atom in self.molecule:
+            cnt = self.molecule.count(atom)
+            self.multiplicity[atom] = cnt
 
     def _collect_params(self):
         """collect information about base set
@@ -54,14 +80,7 @@ class ForceField:
             raise TypeError("Base parameterization is not given!!")
         param_path = f"genpot.param.{self.__repr__()}.{self.base}"
         pm = importlib.import_module(param_path, package=None)
-        self.params, molecule, self.citation = copy.deepcopy(pm.params), pm.molecule, pm.citation
-        # find multiplicity of atoms in molecule
-        self.molecule = re.findall('[A-Z][^A-Z]*', molecule)
-        self.multiplicity = {}
-        for atom in self.molecule:
-            cnt = self.molecule.count(atom)
-            self.multiplicity[atom] = cnt
-        self.header = self._write_header()
+        return copy.deepcopy(pm.params), pm.molecule, pm.citation
 
     @staticmethod
     def _ordered_string(params, param_suffices, param_list):
