@@ -40,7 +40,46 @@ Another example on a parameter couple is the Si and O effective charges, :code:`
 
    potential.update_params({'global': {'Z_Si': 1.5})
 
-Finally, sometimes one wants to change a parameter across _all_ groups. This is usually the case for cutoff distances. To do that, use the 'all' group:
+In some implementations of the Vashishta potential, the steric repulsion strength is expressed in terms of the ionic radii in the same fashion as in the Lorentz–Berthelot mixing rules:
+
+.. math::
+
+    H_{ij}=A_{ij}\left(\frac{\sigma_i+\sigma_j}{r_{ij}}\right)^\eta_{ij}
+
+We can benefit from this as the parameters are linked to physical quantities, and less real parameters have to be set. In :code:`genpot`, setting :math:`H` from :math:`A, \sigma_i` and :math:`\sigma_j` happens automatically if either :math:`A` or :math:`\sigma_<X>` is set globally:
+
+.. code-block:: python
+
+    potential.update_params({'global': {'sigma_X': 0.9})
+
+Setting :math:`H` indirectly requires that all the parameters A, sigmai and sigmaj exist in the parameter dictionary. If they do not, they need to be added (see the 'all' group below):
+
+.. code-block:: python
+
+    potential.update_params({'all': {'sigmai': 0.0, 'sigmaj': 0.0, 'A': 0.0}})  # create keys
+    potential.update_params({'XXX': {'A': 34.76}, 'YYY': {'A': 52.91}, 'XYY,YXX': {'A': 2.11}})  # set A
+    potential.update_params({'global': {'sigma_X': 2.7, 'sigma_Y': 1.8}})  # set sigma
+    
+Similarly, the induced charge-dipole interaction can be expressed in terms of the electronic polarizability,
+
+.. math::
+
+    D_{ij}=\frac{\alpha_i\Z_j^2+\alpha_j\Z_i^2}{2}
+
+with :math:`\alpha_i` as the electronic polarizability of component :math:`i`. The parameter D is indirectly updated when the alphas are updated globally:
+
+.. code-block:: python
+
+    potential.update_params({'global': {'alpha_X': 1.3}})
+
+Again, this only works if both alphai and alphaj exist. If not, they first need to be created:
+
+.. code-block:: python
+
+    potential.update_params({'all': {'alphai': 0.0, 'alphaj': 0.0}})  # create keys
+    potential.update_params({'global': {'alpha_X': 1.3, 'alpha_Y': 1.65}})  # set alpha
+
+Above, we have used the group 'all' on several occations. The 'all' group contains all other groups (but not 'global'), and can either be used to create a key or update a parameter across all the groups at the same time. The latter behavior is usually desired for cutoff distances:
 
 .. code-block:: python
 
