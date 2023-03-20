@@ -1,62 +1,40 @@
 About generate-parameter-files
 ===============================
 
-:code:`generate-parameter-files` is a Python library which aims of generating customized parameter files to be used in LAMMPS. The currently supported force fields are Stillinger-Weber, Vashishta and TIP4P, but additional force fields might be added with few lines of code. One starts from an initial base parameterization (usually taken from the literature). The package might be used for reparameterizing potentials.
+:code:`generate-parameter-files` is a complete tool for handling LAMMPS parameter files directly in Python. The implemented functionality includes reading, writing, manipulating and storing the files. The currently supported force fields are Stillinger-Weber, Vashishta, USC and TIP4P, but additional force fields might be added with few lines of code. The package might be used to automatize parameter updates, which is useful when reparameterizing potentials.
 
-After chosing force field (in our case `Stillinger-Weber <https://docs.lammps.org/pair_sw.html>`_), one imports the force field from :code:`genpot`:
+Usage example
+^^^^^^^^^^^^^
 
-.. code-block:: python
+A common usage of this code is to read an existing parameter file, manipulating it and then write the modified version. Below we will break down the basic commands for this.
 
-   from genpot import StillingerWeber
-
-To pick the initial parameters, we may list all base parameter sets:
-
-.. code-block:: python
-
-   potential = StillingerWeber()
-   potential.list_params()
-
-By doing this we will realize that there is only one base parameter set available, namely the initial parameters by Stillinger and Weber from 1985. This is the base parameterization that we will go for:
+We use the :code:`read` function to read the parameter file into a :code:`ForceField` object. The force-field associated with the parameter file needs to be set with the :code:`format` argument, here demonstrated with the Vashishta potential:
 
 .. code-block:: python
 
-   potential.set_params('si_stillinger_1985')
+    >>> from genpot import read
+    >>> potential = read("sio2.vashishta.1990", format="vashishta")
 
-When we have the base parameterization, we are ready to modify the parameters. A parameter is well-defined by its keyword and the interacting elements. To change the ideal angle (angle that corresponds to lowest three-body interaction) between all the Si-Si-Si triplets, run
-
-.. code-block:: python
-
-   from math import pi, cos
-
-   theta = 110
-   cos_theta = cos(2 * pi * theta / 180) 
-   potential.update_params({'SiSiSi': {'cos(theta)': cos_theta}})
-
-Finally, the parameters are written to file using the :code:`write`-method:
+Other supported formats are :code:`sw`, :code:`usc` and :code:`tip4p`. Alternatively, the :code:`ForceField` object can be initialized from already saved parameter sets:
 
 .. code-block:: python
 
-   potential.write("Si.sw")
+    >>> from genpot import Vashishta
+    >>> potential = Vashishta()
+    >>> potential.list_params()
+    lnp_branicio_2009, sio2_vashishta_1990, sic_vashishta_2007, sio2_vashishta_1997
+    >>> potential.set_params('sio2_vashishta_1990')
 
-Reduce information
-^^^^^^^^^^^^^^^^^^
-
-The default behavior is to output a message to the terminal when a parameter set was successfully written to file. Avoid this by setting :code:`success_msg=False`:
-
-.. code-block:: python
-
-   potential.write("Si.sw", success_msg=False)
-
-
-When the parameter file is modified, a line is added to the file header:
-
-.. code-block:: bash
-
-   # NB: THE PARAMETERS HAVE BEEN MODIFIED
-
-Avoid this by setting :code:`mod_msg=False`:
+Once the :code:`ForceField` object is initialized, the parameters can be modified. To update one parameter associated with an interaction group (e.g. Si-Si-Si), the :code:`update_params` method is used:
 
 .. code-block:: python
 
-   potential.update_params({'SiSiSi': {'p': 0.4}}, mod_msg=False)
+    >>> potential.update_params({'SiSiSi': {'H': 1000}})
 
+Several parameters and groups can be modified at once. Finally, the modified parameter file can be written to file
+
+.. code-block:: python
+
+    >>> potential.write("sio2.vashishta.1990.modified")
+
+More advanced usage examples can be found on the force-field specific pages.
