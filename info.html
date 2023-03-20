@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Other useful functionality &mdash; generate-parameter-files  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="The USC force-field" href="usc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            generate-parameter-files
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About generate-parameter-files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stillingerweber.html">The Stillinger-Weber force field</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vashishta.html">The Vashishta force field</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tip4p.html">The TIP4P force field</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usc.html">The USC force-field</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Other useful functionality</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#initialize-from-dictionary">Initialize from dictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reduce-information">Reduce information</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">generate-parameter-files</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Other useful functionality</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/info.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="other-useful-functionality">
+<h1>Other useful functionality<a class="headerlink" href="#other-useful-functionality" title="Permalink to this heading"></a></h1>
+<section id="initialize-from-dictionary">
+<h2>Initialize from dictionary<a class="headerlink" href="#initialize-from-dictionary" title="Permalink to this heading"></a></h2>
+<p>The parameters can also be initialized from a dictionary. This can be useful for inputting custom parameters to LAMMPS, for instance. The molecule has to be given to make coupled parameters work, but may just be a single atom. Usage example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span>      <span class="p">{</span><span class="s2">&quot;XXX&quot;</span><span class="p">:</span>    <span class="p">{</span><span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                          <span class="s2">&quot;eta&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                          <span class="s2">&quot;Zi&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;Zj&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;r1s&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                          <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;r4s&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+                          <span class="s2">&quot;W&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;rc&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+                          <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;xi&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                          <span class="s2">&quot;cos(theta)&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}}</span>
+
+<span class="n">potential</span> <span class="o">=</span> <span class="n">Vashishta</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">molecule</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reduce-information">
+<h2>Reduce information<a class="headerlink" href="#reduce-information" title="Permalink to this heading"></a></h2>
+<p>The default behavior is to output a message to the terminal when a parameter set was successfully written to file. Avoid this by setting <code class="code docutils literal notranslate"><span class="pre">success_msg=False</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">potential</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Si.sw&quot;</span><span class="p">,</span> <span class="n">success_msg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When the parameter file is modified, a line is added to the file header:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># NB: THE PARAMETERS HAVE BEEN MODIFIED</span>
+</pre></div>
+</div>
+<p>Avoid this by setting <code class="code docutils literal notranslate"><span class="pre">mod_msg=False</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">potential</span><span class="o">.</span><span class="n">update_params</span><span class="p">({</span><span class="s1">&#39;SiSiSi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">}},</span> <span class="n">mod_msg</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usc.html" class="btn btn-neutral float-left" title="The USC force-field" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Even Marius Nordhagen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

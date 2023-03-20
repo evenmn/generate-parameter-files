@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About generate-parameter-files &mdash; generate-parameter-files  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="#" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Welcome to generate-parameter-files’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            generate-parameter-files
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">About generate-parameter-files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#usage-example">Usage example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stillingerweber.html">The Stillinger-Weber force field</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vashishta.html">The Vashishta force field</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tip4p.html">The TIP4P force field</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usc.html">The USC force-field</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info.html">Other useful functionality</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">generate-parameter-files</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">About generate-parameter-files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/about.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="about-generate-parameter-files">
+<h1>About generate-parameter-files<a class="headerlink" href="#about-generate-parameter-files" title="Permalink to this heading"></a></h1>
+<p><code class="code docutils literal notranslate"><span class="pre">generate-parameter-files</span></code> is a complete tool for handling LAMMPS parameter files directly in Python. The implemented functionality includes reading, writing, manipulating and storing the files. The currently supported force fields are Stillinger-Weber, Vashishta, USC and TIP4P, but additional force fields might be added with few lines of code. The package might be used to automatize parameter updates, which is useful when reparameterizing potentials.</p>
+<section id="usage-example">
+<h2>Usage example<a class="headerlink" href="#usage-example" title="Permalink to this heading"></a></h2>
+<p>A common usage of this code is to read an existing parameter file, manipulating it and then write the modified version. Below we will break down the basic commands for this.</p>
+<p>We use the <code class="code docutils literal notranslate"><span class="pre">read</span></code> function to read the parameter file into a <code class="code docutils literal notranslate"><span class="pre">ForceField</span></code> object. The force-field associated with the parameter file needs to be set with the <code class="code docutils literal notranslate"><span class="pre">format</span></code> argument, here demonstrated with the Vashishta potential:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genpot</span> <span class="kn">import</span> <span class="n">read</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">potential</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s2">&quot;sio2.vashishta.1990&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;vashishta&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Other supported formats are <code class="code docutils literal notranslate"><span class="pre">sw</span></code>, <code class="code docutils literal notranslate"><span class="pre">usc</span></code> and <code class="code docutils literal notranslate"><span class="pre">tip4p</span></code>. Alternatively, the <code class="code docutils literal notranslate"><span class="pre">ForceField</span></code> object can be initialized from already saved parameter sets:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">genpot</span> <span class="kn">import</span> <span class="n">Vashishta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">potential</span> <span class="o">=</span> <span class="n">Vashishta</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">potential</span><span class="o">.</span><span class="n">list_params</span><span class="p">()</span>
+<span class="go">lnp_branicio_2009, sio2_vashishta_1990, sic_vashishta_2007, sio2_vashishta_1997</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">potential</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="s1">&#39;sio2_vashishta_1990&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once the <code class="code docutils literal notranslate"><span class="pre">ForceField</span></code> object is initialized, the parameters can be modified. To update one parameter associated with an interaction group (e.g. Si-Si-Si), the <code class="code docutils literal notranslate"><span class="pre">update_params</span></code> method is used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">potential</span><span class="o">.</span><span class="n">update_params</span><span class="p">({</span><span class="s1">&#39;SiSiSi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;H&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">}})</span>
+</pre></div>
+</div>
+<p>Several parameters and groups can be modified at once. Finally, the modified parameter file can be written to file</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">potential</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;sio2.vashishta.1990.modified&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>More advanced usage examples can be found on the force-field specific pages.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to generate-parameter-files’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Even Marius Nordhagen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
