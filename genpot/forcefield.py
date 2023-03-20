@@ -15,8 +15,9 @@ class ForceField:
                 warnings.warn("Both base parameterization and parameters \
                               provided, ignoring base parameterization")
             if molecule is None:
-                raise ValueError("Molecule has to be provided to keep \
-                                  neutral (coupled charges)")
+                warnings.warn("Molecule has not been provided, cannot keep \
+                               neutral (coupled charges)")
+                molecule=""
             self.params = params
             self.citation = citation
             self._get_multiplicity(molecule)
