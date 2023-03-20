@@ -112,7 +112,7 @@ class ForceField:
         :param filename: parameter filename
         """
         # Split group
-        prefix_list = re.findall('[A-Z][^A-Z]*', group)
+        prefix_list = re.findall('[A-Z0-9][^A-Z0-9]*', group)
         with open(filename, 'a') as f:
             f.write("\n")
             for i, suffix_list in enumerate(self.suffices):
