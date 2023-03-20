@@ -8,7 +8,8 @@ import warnings
 
 
 class ForceField:
-    def __init__(self, base=None, params=None, molecule=None, citation=None):
+    def __init__(self, **kwargs):
+        """
         self.base = base
         if params is not None:
             if base is not None:
@@ -25,7 +26,10 @@ class ForceField:
             self.params, molecule, self.citation = self._collect_params()
             self._get_multiplicity(molecule)
             self.header = self._write_header(self.citation)
+        """
         self.modified = False
+        self.has_molecule = True
+        self.set_params(**kwargs)
 
     def __repr__(self):
         return ""
@@ -56,13 +60,38 @@ class ForceField:
         print(', '.join(files))
         return files
 
-    def set_params(self, base):
+    def set_params(self, base=None, params=None, molecule=None, citation=None):
         """Set parameter set
         """
         self.base = base
-        self.params, molecule, self.citation = self._collect_params()
-        self._get_multiplicity(molecule)
-        self.header = self._write_header(self.citation)
+        if params is not None:
+            if base is not None:
+                warnings.warn("Both base parameterization and parameters \
+                              provided, ignoring base parameterization")
+            if molecule is None:
+                #raise ValueError("Molecule has to be provided to keep \
+                #                  neutral (coupled charges)")
+                warnings.warn("Neutral molecule is not defined")
+                self.has_molecule = False
+            self.params = params
+            self.citation = citation
+            if self.has_molecule:
+                self._get_multiplicity(molecule)
+            self.header = self._write_header(self.citation)
+        if base is not None:
+            self.params, molecule, self.citation = self._collect_params()
+            if self.has_molecule:
+                self._get_multiplicity(molecule)
+            self.header = self._write_header(self.citation)
+
+    def get_params(self, array_mode=False):
+        """
+        Get params
+        """
+        if array_mode:
+            return
+        else:
+            return self.params
 
     def _get_multiplicity(self, molecule):
         """Find multiplicity of atoms in molecule
@@ -133,7 +162,7 @@ class ForceField:
             for group in groups:
                 if group == "global":
                     for key, value in parameters.items():
-                        if key.startswith("Z_"):
+                        if key.startswith("Z_") and self.has_molecule:
                             this = key.split("_")[-1]
                             charge_this = value
                             for atom, multi in self.multiplicity.items():
@@ -160,17 +189,29 @@ class ForceField:
                     for parameter, value in parameters.items():
                         self.params[group][parameter] = value
 
-    def scale(self, scalefactor):
-        """ Apply a multiplicative factor to the interaction potential: U -> U' = scalefactor * U by modifying
-        the parameteters in the potential. Useful for i.e thermodynamic integration. 
-        NOTE: Must be implemented differently for differet types of potentials.
+    def scale(self, scalefactor, mod_msg=True):
+        if mod_msg and not self.modified:
+            self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED. POTENTIAL SCALED BY %.2f\n#\n" % scalefactor
+            self.modified = True
+        for pair in self.params:
+            for var, scaling in self.scaling_factors.items():
+                if scaling == 'lin':
+                    self.params[pair][var] *= scalefactor
+                elif scaling == 'sqrt':
+                    self.params[pair][var] *= math.sqrt(scalefactor)
+                elif scaling == 'no':
+                    continue
+                else:
+                    raise NotImplementedError("Scale factor has to be either 'lin', 'sqrt' or 'no'!")
 
-        :param scalefactor: Factor to scale the potential by
-        :type scalefactor: float
+    def read(self, filename, **kwargs):
         """
-        return NotImplementedError
+        Read parameter file
+        """
+        from .io import read as read_
+        self = read_(filename, self, **kwargs)
 
-    def write(self, filename="dest.vashishta", success_msg=True):
+    def write(self, filename, success_msg=True):
         """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
         that are not specified will fall back on these default parameters.
@@ -200,7 +241,7 @@ class ForceField:
         if success_msg:
             print(f"New parameter file '{filename}' successfully generated!")
 
-    def __call__(self, filename="dest.vashishta", success_msg=True):
+    def __call__(self, filename, success_msg=True):
         """Generates input parameter file for the potential. The default
         parameters are the ones specified in Wang et al., so parameters
         that are not specified will fall back on these default parameters.

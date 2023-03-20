@@ -7,9 +7,10 @@ class StillingerWeber(ForceField):
         # through multiple lines, ordering should NOT be modified
         self.suffices = [["epsilon", "sigma", "a", "lambda", "gamma", "cos(theta)"],
                          ["A", "B", "p", "q", "tol"]]
-        #self.base = base
-        #if base is not None:
-        #    self._collect_params()
+
+        # define scaling factors
+        self.scaling_factors = {'A': 'lin', 'lambda': 'lin'}
+
 
     def __repr__(self):
         return "sw"

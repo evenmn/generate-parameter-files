@@ -9,20 +9,55 @@ class Vashishta(ForceField):
         # through multiple lines, ordering should NOT be modified
         self.suffices = [["H", "eta", "Zi", "Zj", "r1s", "D", "r4s"],
                          ["W", "rc", "B", "xi", "r0", "C", "cos(theta)"]]
-        #self.base = base
-        #if base is not None:
-        #    self._collect_params()
 
+        # define coupled parameters
+        intra_coupled_params = {'A': {
+                                    'target': 'H', 
+                                    'dependencies': ['A', 'sigmai', 'sigmaj'],
+                                    'expression': 'H=A*(sigmai+sigmaj)**eta',
+                                    },
+                                'sigmai': {
+                                    'target': 'H', 
+                                    'dependencies': ['A', 'sigmai', 'sigmaj'], 
+                                    'expression': 'H=A*(sigmai+sigmaj)**eta',
+                                    },
+                                          
+                                'sigmaj': {
+                                    'target': 'H', 
+                                    'dependencies': ['A', 'sigmai', 'sigmaj'], 
+                                    'expression': 'H=A*(sigmai+sigmaj)**eta',
+                                    }
+                                }
+
+        inter_coupled_params = ['Z', 'alpha', 'sigma']
+
+        # define scaling factors of the various parameters
+        self.scaling_factors = {'H': 'lin', 'D': 'lin', 'W': 'lin', 'B': 'lin',
+                                'Zi': 'sqrt', 'Zj': 'sqrt'}
+
+
+    """
     def scale(self, scalefactor, mod_msg=True):
         if mod_msg and not self.modified:
             self.header += "# NB: THE PARAMETERS HAVE BEEN MODIFIED. POTENTIAL SCALED BY %.2f\n#\n" % scalefactor
             self.modified = True
         for pair in self.params:
-            for var in ["H", "D", "W", "B"]:
-                self.params[pair][var] *= scalefactor
-            for var in ["Zi", "Zj"]:
-                self.params[pair][var] *= math.sqrt(scalefactor)
-        return
+            for var, scaling in self.scaling_factors.items():
+                if scaling == 'lin':
+                    self.params[pair][var] *= scalefactor
+                elif scaling == 'sqrt':
+                    self.params[pair][var] *= math.sqrt(scalefactor)
+                elif scaling == 'no':
+                    continue
+                else:
+                    raise NotImplementedError("Scale factor has to be either 'lin', 'sqrt' or 'no'!")
+        #for pair in self.params:
+        #    for var in ["H", "D", "W", "B"]:
+        #        self.params[pair][var] *= scalefactor
+        #    for var in ["Zi", "Zj"]:
+        #        self.params[pair][var] *= math.sqrt(scalefactor)
+        #return
+    """
 
     def __repr__(self):
         return "vashishta"
@@ -39,6 +74,10 @@ class Vashishta(ForceField):
                 if group == "global":
                     map = {0: 'i', 1: 'j'}
                     for key, value in parameters.items():
+                        label, type = key.split(":")
+                        assert label in self.inter_coupled_params
+                        if key.startswith("Z:"):
+                            this = key
                         if key.startswith("Z_"):
                             this = key.split("_")[-1]
                             charge_this = value
