@@ -1,7 +1,7 @@
 The Vashishta force field
 =========================
 
-The Vashistha force field is associated with the :code:`Vashistha` object, and contains the same methods as the :code:`StillingerWeber` object described on the _about_ page. This includes the :code:`list_params`-method:
+The Vashishta force field is associated with the :code:`Vashishta` object, and contains the same methods as the :code:`StillingerWeber` object described on the previous page:
 
 .. code-block:: python
 
@@ -55,30 +55,5 @@ Scaling the entire potential can be useful in a few situations, including when p
 .. code-block:: python
 
    potential.scale(scalefactor=0.5)
-
-
-Initialize from dictionary
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The parameters can also be initialized from a dictionary. This can be useful for inputting custom parameters to LAMMPS, for instance. The molecule has to be given to make coupled parameters work, but may just be a single atom. Usage example:
-
-.. code-block:: python
-
-    params =      {"XXX":    {"H": 1.0,
-                              "eta": 1.0,
-                              "Zi": 0.0,
-                              "Zj": 0.0,
-                              "r1s": 1.0,
-                              "D": 0.0,
-                              "r4s": 1.0,
-                              "W": 0.0,
-                              "rc": 10.0,
-                              "B": 0.0,
-                              "xi": 0.0,
-                              "r0": 0.0,
-                              "C": 0.0,
-                              "cos(theta)": 0.0}}
-
-    potential = Vashishta(params=params, molecule="X")
 
 

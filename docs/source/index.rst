@@ -15,6 +15,8 @@ Welcome to generate-parameter-files's documentation!
    stillingerweber
    vashishta
    tip4p
+   usc
+   info
 
 
 
